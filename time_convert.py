@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 import time
 
+# wraper to get function execution time
 def timing(f):
     def wrap(*args):
         time1 = time.time()
