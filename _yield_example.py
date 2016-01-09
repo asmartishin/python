@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Simplifying. But remember that yield is a generator
+#Simplifying. But remember that yield is a generator. It is like a return for generator
 #1) Insert a line result = [] at the start of the function.
 #2) Replace each yield expr with result.append(expr).
 #3) Insert a line return result at the bottom of the function.
