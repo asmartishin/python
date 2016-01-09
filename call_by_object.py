@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# In python, when you assign a value, you are assigning a name to an object. Objects can be mutable and unmutable
+# In python, when you assign a value, you are assigning a name to an object. Objects can be mutable and immutable
 
 def foo(bar):
     bar.append(42)
