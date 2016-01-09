@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+#Decorators allow you to make modifications to callable objects like functions, methods, or classes
+
 def my_shiny_new_decorator(a_function_to_decorate):
     def the_wrapper_around_the_original_function():
         print("Я - код, который работает до вызова функции")
