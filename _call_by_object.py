@@ -16,3 +16,12 @@ def foo(bar):
 a = 'old'
 foo(a)
 print(a)
+
+# another example. we are appending to the same object 
+x = [[]]*3
+x[0].append('a')
+x[1].append('b')
+x[2].append('c')
+x[0]=['d']
+
+print x
