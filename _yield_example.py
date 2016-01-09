@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+#Simplifying. But remember that yield is a generator
+#1) Insert a line result = [] at the start of the function.
+#2) Replace each yield expr with result.append(expr).
+#3) Insert a line return result at the bottom of the function.
+#4) Yay - no more yield statements! Read and figure out code.
+#5) Compare function to original definition.
+
 import math
 
 def is_prime(number):
@@ -47,10 +54,3 @@ def print_successive_primes(iterations, base = 10):
 if __name__ == '__main__':
 #    solve_number_10()
     print_successive_primes(2)
-    
-#Simplifying. But remember that yield is a generator
-#1) Insert a line result = [] at the start of the function.
-#2) Replace each yield expr with result.append(expr).
-#3) Insert a line return result at the bottom of the function.
-#4) Yay - no more yield statements! Read and figure out code.
-#5) Compare function to original definition.
