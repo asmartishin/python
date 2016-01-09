@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+#*args allows you pass an arbitrary number of arguments to function (unknown number)
+#**kwargs allows you to handle named arguments, not defined in advance
+
 import inspect
 
 def test_var_args(farg, *args):
