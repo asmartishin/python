@@ -21,6 +21,7 @@ a_stand_alone_function()
 #Я простая одинокая функция
 #А я - код, срабатывающий после
 
+#function may be wrapped by one or more decorator expressions
 
 def bread(func):
     def wrapper():
