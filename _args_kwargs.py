@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python3
-
 #*args allows you pass an arbitrary number of arguments to function (unknown number)
 #**kwargs allows you to handle named arguments, not defined in advance
 
