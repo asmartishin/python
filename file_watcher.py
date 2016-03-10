@@ -19,15 +19,12 @@ class MyHandler(FileSystemEventHandler):
             push_file(event.src_path, rhost, rdir)
 
 def push_file(lpath, rhost, rdir):
-    if rdir[-1] == '/':
-        rpath = rdir + os.path.basename(lpath)
-    else:
-        rpath = rdir + '/' + os.path.basename(lpath)
+    rpath = rdir + os.path.basename(lpath)
     ssh  = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(rhost, username=user)
     sftp = ssh.open_sftp()
-    sftp.put(os.path.basename(lpath), rpath)
+    sftp.put(lpath, rpath)
     sftp.close()
     ssh.close()
 
@@ -36,6 +33,8 @@ if __name__ == '__main__':
     local_times = {}
     args = parse_arguments()
     rhost, rdir = re.search('([a-zA-z0-9\.\-\_]+):/{0,1}(/{1}.+)', args.remote).group(1,2)
+    if rdir[-1] != '/':
+        rdir = rdir + '/'
     if args.local:
         ldir = args.local
     else:
