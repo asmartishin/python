@@ -24,7 +24,6 @@ def time_exec(method):
         time_end = time.time()
         print('{}: {} s'.format(method.__name__, time_end - time_start))
         return result
-
     return timed
 
 
