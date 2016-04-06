@@ -1,7 +1,7 @@
 from multiprocessing.dummy import Pool
 from multiprocessing import cpu_count
 
-# not a good example)
+# not a good solution for this task
 def f(n, m):
     fr = lambda x, y: x + y
     fm = lambda x: x if x < m else x % m
