@@ -79,4 +79,4 @@ class ApiConnector(object):
 
     def _get_number_of_tickets(self, from_time):
         search_conditions = {"skip": 0, "query": {"ctimeLte": "{}T21:00:00.000Z".format(from_time)}}
-        return self.make_api_request('/tickets/FindTickets/', search_conditions)['total']
+        return self.make_api_request('/tickets/find/', search_conditions)['total']
