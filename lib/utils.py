@@ -56,6 +56,7 @@ def time_exec(method):
         return result
     return timed
 
+
 def parse_arguments(desc):
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-s', '--start', type=int, required=False, default=1,
