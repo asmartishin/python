@@ -55,9 +55,8 @@ class ApiConnector(object):
         search_conditions = {
             "skip": 0,
             "query": {
-                "ctimeGte": "{}T21:00:00.000Z".format(from_time),        
-                "creationTimeLte": "{}T21:00:00.000Z".format(to_time)
-             },
+                "ctimeGte": "{}T21:00:00.000Z".format(from_time)
+             }
         }
         pool_size = multiprocess.cpu_count()
         pool_volume = 10 * pool_size
@@ -78,5 +77,5 @@ class ApiConnector(object):
             search_conditions['skip'] += 1000
 
     def _get_number_of_tickets(self, from_time):
-        search_conditions = {"skip": 0, "query": {"ctimeLte": "{}T21:00:00.000Z".format(from_time)}}
+        search_conditions = {"skip": 0, "query": {"ctimeGte": "{}T21:00:00.000Z".format(from_time)}}
         return self.make_api_request('/tickets/find/', search_conditions)['total']
