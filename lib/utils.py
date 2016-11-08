@@ -55,3 +55,11 @@ def time_exec(method):
         print('{}: {} s'.format(method.__name__, time_end - time_start))
         return result
     return timed
+
+def parse_arguments(desc):
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-s', '--start', type=int, required=False, default=1,
+                        help='Start of ctime range in days')
+    parser.add_argument('-e', '--end', type=int, required=False, default=0,
+                        help='End of ctime range in days')
+    return parser.parse_args()
