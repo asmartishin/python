@@ -3,9 +3,7 @@
 import abc
 
 
-class PizzaBase(object):
-    __metaclass__  = abc.ABCMeta
-
+class PizzaBase(object, metaclass=abc.ABCMeta):
     def __init__(self, size, ingredients):
         assert isinstance(ingredients, list)
         self.size = size
@@ -33,4 +31,3 @@ if __name__ == '__main__':
     pizza = PizzaBase(42, ['cheese'])
     pizza_meat = PizzaWithMeat(42)
     print(pizza_meat.get_ingredients())
-    print(pizza.ingredients)
