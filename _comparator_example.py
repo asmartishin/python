@@ -120,14 +120,6 @@ class AnalyseUrl(object):
     def is_https(self):
         return self.get_scheme() == 'https'
 
-    def add_query_param(self, params):
-        assert isinstance(params, dict)
-        query = {x[0].encode('utf-8'): x[1].encode('utf-8') for x in urlparse.parse_qsl(self.__parsed_url.query)}
-        query.update(params)
-        # Hack! Bad code! urlparse object has no setters
-        self.__parsed_url = self.__parsed_url._replace(query=urlencode(query))
-        return self
-
 
 class Url(object):
     def __init__(self, url):
