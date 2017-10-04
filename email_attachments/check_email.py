@@ -5,7 +5,6 @@ import imaplib
 import email
 import argparse
 import re
-import pymorphy2
 from lib import strip_rtf
 
 
