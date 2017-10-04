@@ -13,7 +13,7 @@ def parse_arguments():
     parser.add_argument('-u', '--user', type=str, required=True, help='User login')
     parser.add_argument('-p', '--password', type=str, required=True, help='User password')
     parser.add_argument(
-        '-f', '--folder', type=str, required=False, default='search-abuse', help = 'Folder with emails'
+        '-f', '--folder', type=str, required=False, default='my-folder', help = 'Folder with emails'
     )
     return vars(parser.parse_args())
 
