@@ -5,7 +5,6 @@ import imaplib
 import email
 import argparse
 import re
-import pymorphy2
 from lib import strip_rtf
 
 
@@ -26,7 +25,6 @@ class MailBox(object):
 
     def __init__(self, user, password, folder):
         self._connection = self._connect(user, password, folder)
-        self._morph = pymorphy2.MorphAnalyzer()
 
     @classmethod
     def _connect(cls, user, password, folder):
