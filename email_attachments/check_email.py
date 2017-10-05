@@ -15,7 +15,16 @@ def parse_arguments():
     parser.add_argument(
         '-f', '--folder', type=str, required=False, default='my-folder', help = 'Folder with emails'
     )
+    parser.add_argument('--from_date', type=valid_date, default=None)
+    parser.add_argument('--to_date', type=valid_date, default=None)
     return vars(parser.parse_args())
+
+
+def valid_date(date):
+    try:
+        return datetime.strptime(date, '%Y-%m-%d').date()
+    except ValueError:
+        raise argparse.ArgumentTypeError("Bad date format. Should be %Y-%m-%d")
 
 
 class MailBox(object):
@@ -23,8 +32,10 @@ class MailBox(object):
     EMAL_SERVER_PORT = 993
     EMAIL_ATTACHMENT_EXTENSION = 'rtf'
 
-    def __init__(self, user, password, folder):
+    def __init__(self, user, password, folder, from_date, to_date):
         self._connection = self._connect(user, password, folder)
+        self._from_date = from_date
+        self._to_date = to_date
 
     @classmethod
     def _connect(cls, user, password, folder):
@@ -48,6 +59,10 @@ class MailBox(object):
             result, message_data = self._connection.fetch(message_id,'(RFC822)')
 
             message = email.message_from_bytes(message_data[0][1])
+            
+            if self._from_date and self._to_date and \
+                    not self._from_date <= datetime(*email.utils.parsedate(message['Date'])[0:6]).date() <= self._to_date:
+                continue
 
             for message_part in message.walk():
                 if message_part.get_content_maintype() != 'multipart' and \
@@ -68,8 +83,12 @@ def main(*args, **options):
     user = options.get('user')
     password = options.get('password')
     folder = options.get('folder')
+    from_date = options.get('from_date')
+    to_date = options.get('to_date')
+    
+    assert from_date <= to_date
 
-    mailbox = MailBox(user, password, folder)
+    mailbox = MailBox(user, password, folder, from_date, to_date)
     mailbox.check_emails()
 
 
