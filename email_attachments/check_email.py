@@ -6,10 +6,11 @@ import email
 import argparse
 import re
 from lib import strip_rtf
+from datetime import datetime, date
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Script for parsing emails')
+    parser = argparse.ArgumentParser(description='Script for fetching email attachments')
     parser.add_argument('-u', '--user', type=str, required=True, help='User login')
     parser.add_argument('-p', '--password', type=str, required=True, help='User password')
     parser.add_argument(
@@ -59,18 +60,21 @@ class MailBox(object):
             result, message_data = self._connection.fetch(message_id,'(RFC822)')
 
             message = email.message_from_bytes(message_data[0][1])
-            
+
             if self._from_date and self._to_date and \
                     not self._from_date <= datetime(*email.utils.parsedate(message['Date'])[0:6]).date() <= self._to_date:
                 continue
 
-            for message_part in message.walk():
-                if message_part.get_content_maintype() != 'multipart' and \
-                        message_part.get('Content-Disposition') is not None:
-                    filename = message_part.get_filename()
-                    if filename and filename.endswith(self.EMAIL_ATTACHMENT_EXTENSION):
-                        rtf_text = strip_rtf(message_part.get_payload(decode=True)).encode('latin1').decode('cp1251')
-                        print(rtf_text)
+            try:
+                for message_part in message.walk():
+                    if message_part.get_content_maintype() != 'multipart' and \
+                            message_part.get('Content-Disposition') is not None:
+                        filename = message_part.get_filename()
+                        if filename and filename.endswith(self.EMAIL_ATTACHMENT_EXTENSION):
+                            rtf_text = strip_rtf(message_part.get_payload(decode=True)).encode('latin1').decode('cp1251')
+                            print(rtf_text)
+            except Exception as exception:
+                print('[ERROR] {}'.format(exception), file=sys.stderr)
 
     def _disconnect(self):
         self._connection.logout()
@@ -85,7 +89,7 @@ def main(*args, **options):
     folder = options.get('folder')
     from_date = options.get('from_date')
     to_date = options.get('to_date')
-    
+
     assert from_date <= to_date
 
     mailbox = MailBox(user, password, folder, from_date, to_date)
