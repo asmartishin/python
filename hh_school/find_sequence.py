@@ -34,13 +34,13 @@ def compute_prefix(A):
     n = len(A)
 
     prefix = [0] * n
-    p = 0
 
     for i in range(1, n):
+        p = prefix[i - 1]
         while p > 0 and A[p] != A[i]:
             p = prefix[p - 1]
 
-        if A[p + 1] == A[i]:
+        if A[p] == A[i]:
             p += 1
         prefix[i] = p
     return prefix
