@@ -10,22 +10,23 @@ def dfs(island, i, j, m, n, possible_height, visited):
         return True
 
     neighbours = ((i + 1, j), (i, j + 1), (i - 1, j), (i, j - 1))
+    result = False
 
     for i, j in neighbours:
         if i < 0 or i > m - 1 or j < 0 or j > n - 1:
             continue
 
         if (i, j) not in visited and possible_height >= island[i][j]:
-            return dfs(island, i, j, m, n, possible_height, visited)
+            result = result or dfs(island, i, j, m, n, possible_height, visited)
 
-    return False
+    return result
 
 
 def get_volume(island, i, j, m, n):
-    min_height = 1
-    max_height = 1001
+    min_height = 0
+    max_height = 1000
 
-    while min_height < max_height:
+    while min_height < max_height - 1:
         possible_height = (min_height + max_height) / 2
 
         visited = set()
@@ -33,9 +34,11 @@ def get_volume(island, i, j, m, n):
         if dfs(island, i, j, m, n, possible_height, visited):
             max_height = possible_height
         else:
-            min_height = possible_height + 1
+            min_height = possible_height
 
-    return possible_height - island[i][j]
+
+
+    return max_height - island[i][j]
 
 
 def get_water_volume(island):
