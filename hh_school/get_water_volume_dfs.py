@@ -36,8 +36,6 @@ def get_volume(island, i, j, m, n):
         else:
             min_height = possible_height
 
-
-
     return max_height - island[i][j]
 
 
