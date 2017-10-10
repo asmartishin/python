@@ -5,33 +5,33 @@ from heapq import heappush, heappop
 
 
 def get_water_volume(island):
-    n = len(island[0])
     m = len(island)
+    n = len(island[0])
 
     visited = [[False] * n for x in xrange(m)]
 
     heights = []
     volume = 0
 
-    for x in range(n):
-        for y in range(m):
-            if x == 0 or y == 0 or x == n - 1 or y == m - 1:
-                heappush(heights, (island[y][x], x, y))
-                visited[y][x] = True
+    for i in range(m):
+        for j in range(n):
+            if i == 0 or j == 0 or i == m - 1 or j == n - 1:
+                heappush(heights, (island[i][j], i, j))
+                visited[i][j] = True
 
     while heights:
-        height, x, y = heappop(heights)
-        neighbours = ((x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1))
+        height, i, j = heappop(heights)
+        neighbours = ((i + 1, j), (i, j + 1), (i - 1, j), (i, j - 1))
 
-        for x, y in neighbours:
-            if x < 0 or x > n - 1 or y < 0 or y > m - 1 or visited[y][x]:
+        for i, j in neighbours:
+            if i < 0 or i > m - 1 or j < 0 or j > n - 1 or visited[i][j]:
                 continue
 
-            if height > island[y][x]:
-                volume += height - island[y][x]
+            if height > island[i][j]:
+                volume += height - island[i][j]
 
-            heappush(heights, (max(island[y][x], height), x, y))
-            visited[y][x] = True
+            heappush(heights, (max(island[i][j], height), i, j))
+            visited[i][j] = True
 
     return volume
 
