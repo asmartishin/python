@@ -51,6 +51,7 @@ def get_water_volume(island):
 
     return volume
 
+
 if __name__ == '__main__':
     island = map(lambda x: [int(y) for y in str(x).rstrip().split()], stdin.readlines())
 
