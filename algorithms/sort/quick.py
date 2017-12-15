@@ -1,0 +1,38 @@
+def quick_sort(alist):
+    quick_sort_helper(alist, 0, len(alist) - 1)
+
+
+def quick_sort_helper(alist, first, last):
+    if first < last:
+        splitpoint = partition(alist, first, last)
+
+        quick_sort_helper(alist, first, splitpoint - 1)
+        quick_sort_helper(alist, splitpoint + 1, last)
+
+
+def partition(alist, first, last):
+    pivotvalue = alist[first]
+
+    leftmark = first + 1
+    rigthmark = last
+
+    done = False
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+
+        while alist[rigthmark] >= pivotvalue and rigthmark >= leftmark:
+            rigthmark -= 1
+
+        if rigthmark < leftmark:
+            done = True
+        else:
+            alist[leftmark], alist[rigthmark] = alist[rigthmark], alist[leftmark]
+
+    alist[first], alist[rigthmark] = alist[rigthmark], alist[first]
+
+    return rigthmark
+
+alist = [54,26,93,17,77,31,44,55,20]
+quick_sort(alist)
+print(alist)
