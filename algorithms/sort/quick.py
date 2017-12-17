@@ -1,38 +1,37 @@
-def quick_sort(alist):
-    quick_sort_helper(alist, 0, len(alist) - 1)
+#!/usr/bin/env python
 
 
-def quick_sort_helper(alist, first, last):
-    if first < last:
-        splitpoint = partition(alist, first, last)
-
-        quick_sort_helper(alist, first, splitpoint - 1)
-        quick_sort_helper(alist, splitpoint + 1, last)
+import random
 
 
-def partition(alist, first, last):
-    pivotvalue = alist[first]
+def partition(nums, l, r, p):
+    nums[p], nums[l] = nums[l], nums[p]
+    p = l;
 
-    leftmark = first + 1
-    rigthmark = last
+    for i in range(l + 1, r):
+        if nums[i] <= nums[l]:
+            p += 1;
+            nums[i], nums[p] = nums[p], nums[i]
 
-    done = False
-    while not done:
-        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
-            leftmark += 1
+    nums[l], nums[p] = nums[p], nums[l]
+    return p
 
-        while alist[rigthmark] >= pivotvalue and rigthmark >= leftmark:
-            rigthmark -= 1
 
-        if rigthmark < leftmark:
-            done = True
-        else:
-            alist[leftmark], alist[rigthmark] = alist[rigthmark], alist[leftmark]
+def quicksort(nums, l, r):
+    if l < r:
+        p = l + random.randint(0, r - l - 1)
+        p = partition(nums, l, r, p)
 
-    alist[first], alist[rigthmark] = alist[rigthmark], alist[first]
+        quicksort(nums, l, p)
+        quicksort(nums, p + 1, r)
 
-    return rigthmark
 
-alist = [54,26,93,17,77,31,44,55,20]
-quick_sort(alist)
-print(alist)
+def main():
+    nums = [1, 3, 2, 6, 5, 7]
+    quicksort(nums, 0, len(nums))
+    print nums
+
+
+if __name__ == '__main__':
+    main()
+
