@@ -10,10 +10,8 @@ def total_size(data):
     handlers = {
         tuple: iter,
         list: iter,
-        deque: iter,
         dict: lambda x: chain.from_iterable(x.items()),
         set: iter,
-        frozenset: iter,
     }
 
     def size(data):
@@ -24,7 +22,8 @@ def total_size(data):
         result = getsizeof(data)
 
         try:
-            result += sum(map(size, handlers[type(data)](data)))
+            for x in handlers[type(data)](data):
+                result += size(x)
         except KeyError:
             pass
 
