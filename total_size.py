@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+from sys import getsizeof
+from itertools import chain
+from collections import deque
+
+
+def total_size(data):
+    used = set()
+    handlers = {
+        tuple: iter,
+        list: iter,
+        deque: iter,
+        dict: lambda x: chain.from_iterable(x.items()),
+        set: iter,
+        frozenset: iter,
+    }
+
+    def size(data):
+        if id(data) in used:
+            return 0
+
+        used.add(id(data))
+        result = getsizeof(data)
+
+        try:
+            result += sum(map(size, handlers[type(data)](data)))
+        except KeyError:
+            pass
+
+        return result
+
+    return size(data)
+
+
+def main():
+    d = {'a': ['b', 'e'], 'c': {'t': 'f'}}
+    print(total_size(d))
+
+
+if __name__ == '__main__':
+    main()
+
