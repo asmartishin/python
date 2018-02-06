@@ -2,7 +2,6 @@
 
 from sys import getsizeof
 from itertools import chain
-from collections import deque
 
 
 def total_size(data):
