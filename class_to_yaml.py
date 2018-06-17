@@ -15,6 +15,18 @@ class User(object):
         self.age = age
         self.parents = parents
 
+    def __str__(self):
+        return "User({}, {}, {})".format(self.name, self.age, self.parents)
+
+
+    def __repr__(self):
+        return str(self)
+
+
+class Always21User(User):
+    def __init__(self, name, parents):
+        super(Always21User, self).__init__(name, 21, parents)
+
 
 def represent_ordereddict(dumper, tag, data):
     value = []
@@ -39,14 +51,15 @@ def yaml_class_constructor(klass, loader, node):
 
 if __name__ == '__main__':
     data = OrderedDict([
-        ('users', [User('Alex', 25, Parents('oksana', 'sergey')), User('Anna', 24, Parents('Olga', 'vadim'))]),
+        ('users', [Always21User('Alex', None), Always21User('Anna', Parents('Olga', 'vadim'))]),
     ])
 
     data = yaml.dump(data, Dumper=yamlordereddictloader.Dumper, default_flow_style=False)
     print yaml.load(data, Loader=yamlordereddictloader.Loader)['users']
 
-yaml.add_representer(User, partial(yaml_class_representer, '!user', ['name', 'age', 'parents']))
-yaml.add_representer(Parents,  partial(yaml_class_representer, '!parents', ['mom', 'dad']))
 yaml.add_constructor(u'!user', partial(yaml_class_constructor, User))
 yaml.add_constructor(u'!parents', partial(yaml_class_constructor, Parents))
+yaml.add_representer(User, partial(yaml_class_representer, '!user', ['name', 'age', 'parents']))
+yaml.add_representer(Parents,  partial(yaml_class_representer, '!parents', ['mom', 'dad']))
+
 
