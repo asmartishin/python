@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import logging
-from sys import stdout
 import argparse
 
 from flask import Flask, request, Response
