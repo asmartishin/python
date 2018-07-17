@@ -1,83 +1,60 @@
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple
+import urllib
+from urlparse import urljoin
+
 import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-import logging
-from sys import stdout
-from functools import wraps
-import urllib
-from urlparse import urljoin
 
 API_CLIENT_TIMEOUT = 60
 API_RETRIES_COUNT = 3
 API_BACKOFF_FACTOR = 0.1
 API_BAD_STATUSES = (500, 502, 503, 504)
 
-log = logging.getLogger(__name__)
-logging.basicConfig(stream=stdout, format="%(asctime)s %(levelname)s %(message)s")
-
 
 class ApiClientError(Exception):
-    def __init__(self, *args):
-        self.logged = False
-        super(ApiClientError, self).__init__(*args)
+    pass
 
 
 class ApiClientHttpError(ApiClientError):
     pass
 
 
-def path(relative_url):
+def handle_error(default_error, custom_errors=None):
+    if custom_errors is None:
+        custom_errors = {}
+
     def function_decorator(func):
         @wraps(func)
-        def function_wrapper(self, *args, **kwargs):
-            api_path = urljoin(self._base_url, relative_url)
-            return func(self, api_path, *args, **kwargs)
-        return function_wrapper
-    return function_decorator
-
-
-def log_exceptions(logger):
-    def function_decorator(func):
-        @wraps(func)
-        def function_wrapper(self, *args, **kwargs):
+        def function_wrapper(*args, **kwargs):
             try:
-                return func(self, *args, **kwargs)
+                return func(*args, **kwargs)
             except Exception as e:
-                if hasattr(e, 'logged') and not e.logged:
-                    e.logged = True
-                    logger.error(e.message)
-                raise
+                try:
+                    error = custom_errors[type(e)](e)
+                except (KeyError, TypeError):
+                    error = default_error(e)
+                raise error
         return function_wrapper
     return function_decorator
-
-
-class LogExceptionsMetaClass(type):
-    def __new__(mcs, name, bases, cls_dict):
-        new_cls_dict = {}
-        for name, attribute in cls_dict.items():
-            if callable(attribute):
-                attribute = log_exceptions(log)(attribute)
-            new_cls_dict[name] = attribute
-        return type.__new__(mcs, name, bases, new_cls_dict)
-
-
-ApiErrors = namedtuple("ApiErrors", "basic http")
 
 
 class ApiClient(object):
-    __metaclass__ = LogExceptionsMetaClass
+    handle_error = handle_error(
+        default_error=ApiClientError,
+        custom_errors={
+            requests.RequestException: ApiClientHttpError,
+        }
+    )
 
-    API_ERRORS = ApiErrors(ApiClientError, ApiClientHttpError)
-
-    def __init__(self, base_url, oauth_token=None):
+    def __init__(self, base_url, oauth_token=None, timeout=API_CLIENT_TIMEOUT):
         if not base_url.endswith('/'):
             base_url += '/'
 
         self._base_url = base_url
         self._session = requests.Session()
+        self._timeout = timeout
 
         retries = Retry(
             total=API_RETRIES_COUNT,
@@ -94,46 +71,45 @@ class ApiClient(object):
             headers['Authorization'] = 'OAuth {}'.format(oauth_token)
         self._session.headers.update(headers)
 
-    def _get(self, url, error_message='GET request failed'):
-        try:
-            response = self._session.get(url, timeout=API_CLIENT_TIMEOUT)
-            response.raise_for_status()
+    @handle_error
+    def _get(self, url, json_format=True):
+        response = self._session.get(url, timeout=self._timeout)
+        response.raise_for_status()
+
+        if json_format:
             return response.json()
-        except requests.RequestException as e:
-            raise self._handle_http_error(e, error_message)
-        except Exception as e:
-            raise self._handle_error(e, error_message)
 
-    def _post(self, url, data=None, json=None, error_message='POST request failed'):
-        try:
-            response = self._session.post(url, data=data, json=json, timeout=API_CLIENT_TIMEOUT)
-            response.raise_for_status()
+        return response
+
+    @handle_error
+    def _post(self, url, data=None, json=None, json_format=True):
+        response = self._session.post(url, data=data, json=json, timeout=self._timeout)
+        response.raise_for_status()
+
+        if json_format:
             return response.json()
-        except requests.RequestException as e:
-            raise self._handle_http_error(e, error_message)
-        except Exception as e:
-            raise self._handle_error(e, error_message)
 
-    def _put(self, url, data=None, json=None, error_message='PUT request failed'):
-        try:
-            response = self._session.put(url, data=data, json=json, timeout=API_CLIENT_TIMEOUT)
-            response.raise_for_status()
+        return response
+
+    @handle_error
+    def _put(self, url, data=None, json=None, json_format=True):
+        response = self._session.put(url, data=data, json=json, timeout=self._timeout)
+        response.raise_for_status()
+
+        if json_format:
             return response.json()
-        except requests.RequestException as e:
-            raise self._handle_http_error(e, error_message)
-        except Exception as e:
-            raise self._handle_error(e, error_message)
 
-    @classmethod
-    def _handle_http_error(cls, e, error_message):
-        error_message = '{} with http error: "{}"'.format(error_message, e.message)
-        return cls.API_ERRORS.http(error_message)
-
-    @classmethod
-    def _handle_error(cls, e, error_message):
-        error_message = '{} with error: "{}"'.format(error_message, e.message)
-        return cls.API_ERRORS.basic(error_message)
+        return response
 
     @classmethod
     def _build_query(cls, data):
         return urllib.urlencode(data)
+
+    def _build_url(self, relative_url, *args, **kwargs):
+        url = urljoin(self._base_url, relative_url)
+
+        if kwargs:
+            query = self._build_query(kwargs)
+            args = args + (query,)
+
+        return url.format(*args)
