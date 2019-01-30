@@ -5,7 +5,10 @@ import SocketServer
 import json
 import random
 from sys import argv
+import socket
 
+class HTTPServerV6(HTTPServer):
+    address_family = socket.AF_INET6
 
 class ServerHandlers(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -25,9 +28,8 @@ class ServerHandlers(BaseHTTPRequestHandler):
 
         return
 
-
 def run(port=8080):
-    httpd = HTTPServer(('', port), ServerHandlers)
+    httpd = HTTPServerV6(('::', port), ServerHandlers)
     print 'Starting httpd...'
     httpd.serve_forever()
 
@@ -37,3 +39,4 @@ if __name__ == "__main__":
         run(port=int(argv[1]))
     else:
         run()
+
